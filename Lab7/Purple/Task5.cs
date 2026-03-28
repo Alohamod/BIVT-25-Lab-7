@@ -1,8 +1,7 @@
-﻿using System.Runtime;
-using System.Xml.Linq;
-using static Lab7.Purple.Task5;
+using System.Collections.Generic;
+using static Lab8.Purple.Task5;
 
-namespace Lab7.Purple
+namespace Lab8.Purple
 {
     public class Task5
     {
@@ -27,7 +26,7 @@ namespace Lab7.Purple
             {
                 if (responses == null || responses.Length == 0) return 0;
                 int k = 0;
-                if (questionNumber == 1) 
+                if (questionNumber == 1)
                 {
                     for (int i = 0; i < responses.Length; i++)
                     {
@@ -119,14 +118,14 @@ namespace Lab7.Purple
                 }
 
                 int[] ans_kol = new int[ans.Length];
-                for (int i = 0;  i < ans.Length; i++)
+                for (int i = 0; i < ans.Length; i++)
                 {
                     int k = 1;
                     if (ans[i] != null)
                     {
-                        for (int j = i+1; j < ans.Length; j++)
+                        for (int j = i + 1; j < ans.Length; j++)
                         {
-                            if (ans[i] == ans[j]) 
+                            if (ans[i] == ans[j])
                             {
                                 k++;
                                 ans[j] = null;
@@ -142,12 +141,12 @@ namespace Lab7.Purple
                 string[] ans_fin = new string[0];
                 for (int i = 0; i < 5; i++)
                 {
-                    if (ans_kol.Max() == 0 ) break;
-                    for (int j = 0; j < ans_kol.Length; j ++)
+                    if (ans_kol.Max() == 0) break;
+                    for (int j = 0; j < ans_kol.Length; j++)
                     {
-                        if (ans_kol[j]== ans_kol.Max() && ans[j] != null)
+                        if (ans_kol[j] == ans_kol.Max() && ans[j] != null)
                         {
-                            Array.Resize(ref ans_fin, ans_fin.Length+1);
+                            Array.Resize(ref ans_fin, ans_fin.Length + 1);
                             ans_fin[i] = ans[j];
                             ans_kol[j] = 0;
                             break;
@@ -159,7 +158,7 @@ namespace Lab7.Purple
                 Console.WriteLine(string.Join(" ", ans_kol));
                 Console.WriteLine(string.Join(" ", ans_fin));
                 return ans_fin;
-                
+
             }
             public void Print()
             {
@@ -167,5 +166,110 @@ namespace Lab7.Purple
                 Console.WriteLine(_responses);
             }
         }
+        public class Report
+        {
+            private static int _num;
+            private Research[] _researches;
+
+            public Research[] Researches => _researches;
+
+            static Report()
+            {
+                _num = 1;
+            }
+            public Report()
+            {
+                _researches = new Research[0];
+            }
+            public Research MakeResearch()
+            {
+                int X = _num;
+                _num += 1;
+                var MM = DateTime.Now.Month;
+                var YY = (DateTime.Now.Year)%100;
+                var name = $"No_{X}_{MM:D2}/{YY}";
+                var a = new Research(name);
+                Array.Resize(ref _researches, _researches.Length+1);
+                _researches[^1] = a;
+                return a;
+            }
+            public (string, double)[] GetGeneralReport(int question)
+            {
+                string[] ans = new string[0];
+                double[] ans_kol = new double[ans.Length];
+                int kol_vse = 0;
+                foreach (var reserche in _researches)
+                {
+
+                    if (question == 1)
+                    {
+                        for (int i = 0; i < reserche.Responses.Length; i++)
+                        {
+                            Array.Resize(ref ans, ans.Length + 1);
+                            ans[^1] = reserche.Responses[i].Animal;
+                        }
+                    }
+                    else if (question == 2)
+                    {
+                        for (int i = 0; i < reserche.Responses.Length; i++)
+                        {
+                            Array.Resize(ref ans, ans.Length + 1);
+                            ans[^1] = reserche.Responses[i].CharacterTrait;
+                        }
+                    }
+                    else if (question == 3)
+                    {
+                        for (int i = 0; i < reserche.Responses.Length; i++)
+                        {
+                            Array.Resize(ref ans, ans.Length + 1);
+                            ans[^1] = reserche.Responses[i].Concept;
+                        }
+                    }
+                    Console.WriteLine(string.Join(", ", ans));
+                    Console.WriteLine();
+                }
+                ans_kol = new double[ans.Length];
+                for (int i = 0; i < ans.Length; i++)
+                {
+                    int k = 1;
+                    if (ans[i] != null)
+                    {
+                        for (int j = i + 1; j < ans.Length; j++)
+                        {
+                            if (ans[i] == ans[j])
+                            {
+                                    
+                                k++;
+                                ans[j] = null;
+                                
+                            }
+                        }
+                        ans_kol[i] = k;
+                        kol_vse += k;
+                    }
+
+
+                }
+                ans = ans.Where(s => !string.IsNullOrWhiteSpace(s)).ToArray();
+                ans_kol = ans_kol.Where(n => n != 0).ToArray();
+                Console.WriteLine(string.Join(", ", ans));
+                Console.WriteLine(string.Join(", ", ans_kol));
+
+
+                (string, double)[] ans_fin = new (string, double)[ans.Length];
+                ans.OrderBy(ans => ans_kol).ToArray();
+                for (int i = 0; i < ans.Length; i++)
+                {
+                    ans_fin[i] = (ans[i], ans_kol[i]/(double)kol_vse*100);
+                }
+                return ans_fin;
+
+
+            }
+
+
+
+        }
+
     }
 }

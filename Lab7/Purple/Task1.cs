@@ -1,11 +1,12 @@
-﻿using System.Security.Cryptography;
+using System.Linq;
+using System.Security.Cryptography;
 
-namespace Lab7.Purple
+namespace Lab8.Purple
 {
     public class Task1
     {
-        
-        public struct Participant
+
+        public class  Participant
         {
 
             private string _name;
@@ -98,7 +99,7 @@ namespace Lab7.Purple
                 if (_coefs == null) return;
                 else
                 {
-                    for ( int i = 0; i < _coefs.Length; i++)
+                    for (int i = 0; i < _coefs.Length; i++)
                     {
                         _coefs[i] = coefs[i];
                     }
@@ -134,6 +135,100 @@ namespace Lab7.Purple
                 Console.WriteLine(Surname);
                 Console.WriteLine(TotalScore);
             }
+        }
+        public class Judge
+        {
+            private string _name;
+            private int[] _favoritemarks;
+            private int num_mark;
+
+            public string Name => _name;
+
+
+            public Judge(string name, int[] marks)
+            {
+                _name = name;
+                _favoritemarks = marks;
+                num_mark = 0;
+            }
+
+            
+            public int CreateMark()
+            {
+                if (_favoritemarks == null || _favoritemarks.Length == 0) return 0;
+                if (num_mark < _favoritemarks.Length)
+                {
+                    num_mark++;
+                    return _favoritemarks[num_mark-1];
+                }
+                else
+                {
+                    num_mark = 0;
+                    return _favoritemarks[num_mark];
+                }
+
+            }
+            public void Print()
+            {
+                Console.WriteLine(Name);
+                
+            }
+
+        }
+        
+        public class Competition
+        {
+            private Judge[] _judge;
+            private Participant[] _participants;
+
+            public Judge[] Judges => _judge.ToArray();
+            public Participant[] Participants => _participants.ToArray();
+
+
+            public Competition(Judge[] judges)
+            {
+                _judge = judges.ToArray();
+                _participants = new Participant[0];
+
+            }
+            public void Evaluate(Participant jumper)
+            {
+                if (jumper == null) return;
+                int[] mark = new int[jumper.Marks.Length];
+                for (int i = 0;  i < _judge.Length; i++)
+                {
+                    mark[i] = _judge[i].CreateMark();
+                }
+                jumper.Jump(mark);
+
+            }
+            public void Add(Participant chel)
+            {
+                Array.Resize(ref _participants, _participants.Length + 1);
+                _participants[^1] = chel;
+                Evaluate(_participants[^1]);
+            }
+            public void Add(Participant[] cheliks)
+            {
+                foreach (Participant chel in cheliks)
+                {
+                    Add(chel);
+                }
+                
+            }
+            public void Sort()
+            {
+                {
+                    if (_participants == null || _participants.Length == 0) return;
+                    var s = _participants.OrderByDescending(participant => participant.TotalScore).ToArray();
+                    for (int i = 0; i < _participants.Length; i++)
+                    {
+                        _participants[i] = s[i];
+                    }
+
+                }
+            }
+
         }
     }
 }
